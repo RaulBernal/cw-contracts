@@ -12,7 +12,6 @@ pub struct InstantiateMsg {
 #[cw_serde]
 pub enum ExecuteMsg {
     Burn { amount: u128},
-    // Reset { count: i32 },
 }
 
 /// QueryMsg is the message to execute a query
