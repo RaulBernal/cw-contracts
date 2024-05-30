@@ -3,14 +3,11 @@ use cosmwasm_std::entry_point;
 use cosmwasm_std::{to_json_binary, Binary, Order, Deps, DepsMut, Env, MessageInfo, Response, StdResult, Coin, BankMsg, CosmosMsg};
 use cw2::set_contract_version;
 use std::ops::Add;
-
-
 use cw_storage_plus::Bound;
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg, BurnHistoryResponse};
 use crate::state::{Config, CONFIG, BURN_SEQ, BurnHistory, BURN_HISTORY};
-
 
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:cw-burn";
@@ -96,7 +93,6 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
 
 pub mod query {
     use super::*;
-
 
     // Limits for pagination
     const MAX_LIMIT: u32 = 30;
