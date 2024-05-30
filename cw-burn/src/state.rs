@@ -4,9 +4,6 @@ use cw_storage_plus::{ Map, Item };
 use cosmwasm_std::{ Addr, Coin };
 use cosmwasm_std::Timestamp;
 
- 
-
-
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, JsonSchema)]
 pub struct Config {
     pub owner: Addr, 
