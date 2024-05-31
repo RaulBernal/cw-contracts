@@ -19,7 +19,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: 1.60.0
+          toolchain: 1.74.0
           target: wasm32-unknown-unknown
           override: true
 
@@ -65,22 +65,28 @@ jobs:
           working-directory: ./cw-burn
 
       - name: Run cargo fmt
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/toolchain@v1
         with:
+          profile: minimal
+          toolchain: 1.74.0
           command: fmt
           args: --all -- --check --release --manifest-path cw-burn/Cargo.toml
         env:
           working-directory: ./cw-burn
 
       - name: Run cargo clippy
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/toolchain@v1
         with:
+          profile: minimal
+          toolchain: 1.74.0
           command: clippy
           args: -- -D warnings
 
       - name: Generate Schema
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/toolchain@v1
         with:
+          profile: minimal
+          toolchain: 1.74.0
           command: schema
           args: --locked --release --manifest-path cw-burn/Cargo.toml
 
