@@ -12,7 +12,7 @@ use crate::contract::query::{get_bonded};
  
 use crate::msg;
 
-// version info for migration info
+// version info for migration info.
 const CONTRACT_NAME: &str = "crates.io:cw-airdrop";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
