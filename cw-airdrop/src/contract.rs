@@ -17,7 +17,7 @@ const CONTRACT_NAME: &str = "crates.io:cw-airdrop";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 // Token info
-const DENOM: &str = "udao"; 
+const DENOM: &str = "ubcna"; 
 const AIRDROP_AMOUNT: u128 = 1000000; 
 
 #[cfg_attr(not(feature = "library"), entry_point)]
