@@ -24,8 +24,10 @@ jobs:
           override: true
 
       - name: Run unit tests
-        uses: actions-rs/cargo@v1
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: 1.74.0
+          targets: wasm32-unknown-unknown
           command: test
           args: --locked --manifest-path cw-burn/Cargo.toml
         env:
@@ -33,8 +35,10 @@ jobs:
           
 
       - name: Compile WASM contract
-        uses: actions-rs/cargo@v1
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: 1.74.0
+          targets: wasm32-unknown-unknown
           command: build
           args: --target wasm32-unknown-unknown --release --manifest-path cw-burn/Cargo.toml
         env:
