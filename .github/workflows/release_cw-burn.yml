@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
+        
       - name: Install cargo-run-script
         uses: dtolnay/rust-toolchain@master
         with:
@@ -19,6 +20,7 @@ jobs:
           targets: wasm32-unknown-unknown
           command: install
           args: cargo-run-script --manifest-path cw-burn/Cargo.toml
+          
       - name: Run cargo optimize
         uses: dtolnay/rust-toolchain@master
         with:
@@ -28,11 +30,16 @@ jobs:
           args: optimize --manifest-path cw-burn/Cargo.toml
         env:
           RUST_BACKTRACE: full
+          
+      - name: List artifacts directory for debugging
+        run: ls -la ./cw-burn/artifacts/
+        
       - name: Get release ID
         id: get_release
         uses: bruceadams/get-release@v1.2.3
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          
       - name: Upload optimized wasm
         uses: svenstaro/upload-release-action@v2
         with:
