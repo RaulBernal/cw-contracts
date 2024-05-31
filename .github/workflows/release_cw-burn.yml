@@ -16,14 +16,14 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: install
-          args: cargo-run-script
+          args: cargo-run-script --manifest-path cw-burn/Cargo.toml
       - name: Run cargo optimize
         uses: actions-rs/cargo@v1
         with:
           command: run-script
           args: optimize --manifest-path cw-burn/Cargo.toml
         env:
-          RUST_BACKTRACE: 1
+          RUST_BACKTRACE: full
       - name: Get release ID
         id: get_release
         uses: bruceadams/get-release@v1.2.3
