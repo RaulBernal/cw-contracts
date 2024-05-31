@@ -9,7 +9,7 @@ use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg, BurnHistoryResponse};
 use crate::state::{Config, CONFIG, BURN_SEQ, BurnHistory, BURN_HISTORY};
 
-// version info for migration info.
+// version info for migration info
 const CONTRACT_NAME: &str = "crates.io:cw-burn";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 // Token info
