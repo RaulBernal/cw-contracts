@@ -67,7 +67,7 @@ pub mod execute {
         // Then we add the message to the response
         let msgs: Vec<CosmosMsg> = vec![burn_msg.into()];
 
-        // Save the burn history
+        // Save the burn history: log
         let id = BURN_SEQ.update::<_, cosmwasm_std::StdError>(deps.storage, |id| Ok(id.add(1)))?;
         let new_entry = BurnHistory {
             id,

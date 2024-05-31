@@ -2,7 +2,7 @@ use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::Addr;
 use crate::state::BurnHistory;
 
-/// InstantiateMsg is the message to instantiate the contract
+/// InstantiateMsg is the message to instantiate the contract.
 #[cw_serde]
 pub struct InstantiateMsg {
     pub owner: Addr, 

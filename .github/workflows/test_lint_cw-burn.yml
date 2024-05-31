@@ -1,0 +1,95 @@
+on: 
+  push:
+    paths:
+      - 'cw-burn/**'
+
+name: Basic
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./cw-burn
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: 1.74.0
+          target: wasm32-unknown-unknown
+          override: true
+
+      - name: Run unit tests
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.74.0
+          targets: wasm32-unknown-unknown
+          command: test
+          args: --locked --manifest-path cw-burn/Cargo.toml
+        env:
+          RUST_BACKTRACE: 1
+          
+
+      - name: Compile WASM contract
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.74.0
+          targets: wasm32-unknown-unknown
+          command: build
+          args: --target wasm32-unknown-unknown --release --manifest-path cw-burn/Cargo.toml
+        env:
+          RUSTFLAGS: "-C link-arg=-s"
+          working-directory: ./cw-burn
+
+  lints:
+    name: Lints
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./cw-burn
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: 1.60.0
+          override: true
+          components: rustfmt, clippy
+        env:
+          working-directory: ./cw-burn
+
+      - name: Run cargo fmt
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: 1.74.0
+          command: fmt
+          args: --all --check --release --manifest-path cw-burn/Cargo.toml
+        env:
+          working-directory: ./cw-burn
+
+      - name: Run cargo clippy
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: 1.74.0
+          command: clippy
+          args: -D warnings
+
+      - name: Generate Schema
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: 1.74.0
+          command: schema
+          args: --locked --release --manifest-path cw-burn/Cargo.toml
+
+      - name: Schema Changes
+        # fails if any changes not committed
+        run: git diff --exit-code -- ./cw-burn/schema
