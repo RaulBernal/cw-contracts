@@ -27,17 +27,19 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --locked
+          args: --locked --manifest-path cw-burn/Cargo.toml
         env:
           RUST_BACKTRACE: 1
+          
 
       - name: Compile WASM contract
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --target wasm32-unknown-unknown --release
+          args: --target wasm32-unknown-unknown --release --manifest-path cw-burn/Cargo.toml
         env:
           RUSTFLAGS: "-C link-arg=-s"
+          working-directory: ./cw-burn
 
   lints:
     name: Lints
@@ -55,12 +57,16 @@ jobs:
           toolchain: 1.60.0
           override: true
           components: rustfmt, clippy
+        env:
+          working-directory: ./cw-burn
 
       - name: Run cargo fmt
         uses: actions-rs/cargo@v1
         with:
           command: fmt
-          args: --all -- --check
+          args: --all -- --check --release --manifest-path cw-burn/Cargo.toml
+        env:
+          working-directory: ./cw-burn
 
       - name: Run cargo clippy
         uses: actions-rs/cargo@v1
@@ -72,7 +78,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: schema
-          args: --locked
+          args: --locked --release --manifest-path cw-burn/Cargo.toml
 
       - name: Schema Changes
         # fails if any changes not committed
