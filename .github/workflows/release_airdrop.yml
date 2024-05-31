@@ -1,39 +1,96 @@
-name: release wasm
 
-on:
-  release:
+on: 
+  push:
     paths:
       - 'cw-airdrop/**'
-    types: [created]
+
+name: Basic
 
 jobs:
-  release:
+  test:
+    name: Test Suite
     runs-on: ubuntu-latest
     env:
       working-directory: ./cw-airdrop
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
-      - name: Install cargo-run-script
-        uses: actions-rs/cargo@v1
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
         with:
-          command: install
-          args: cargo-run-script
-      - name: Run cargo optimize
-        uses: actions-rs/cargo@v1
+          profile: minimal
+          toolchain: 1.74.0
+          target: wasm32-unknown-unknown
+          override: true
+
+      - name: Run unit tests
+        uses: dtolnay/rust-toolchain@master
         with:
-          command: run-script
-          args: optimize
-      - name: Get release ID
-        id: get_release
-        uses: bruceadams/get-release@v1.2.3
+          toolchain: 1.74.0
+          targets: wasm32-unknown-unknown
+          command: test
+          args: --locked --manifest-path cw-airdrop/Cargo.toml
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - name: Upload optimized wasm
-        uses: svenstaro/upload-release-action@v2
+          RUST_BACKTRACE: 1
+          
+
+      - name: Compile WASM contract
+        uses: dtolnay/rust-toolchain@master
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./artifacts/*.wasm
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
+          toolchain: 1.74.0
+          targets: wasm32-unknown-unknown
+          command: build
+          args: --target wasm32-unknown-unknown --release --manifest-path cw-airdrop/Cargo.toml
+        env:
+          RUSTFLAGS: "-C link-arg=-s"
+          working-directory: ./cw-airdrop
+
+  lints:
+    name: Lints
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./cw-airdrop
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: 1.74.0
+          override: true
+          components: rustfmt, clippy
+        env:
+          working-directory: ./cw-airdrop
+
+      - name: Run cargo fmt
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: 1.74.0
+          command: fmt
+          args: --all --check --release --manifest-path cw-airdrop/Cargo.toml
+        env:
+          working-directory: ./cw-airdrop
+
+      - name: Run cargo clippy
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: 1.74.0
+          command: clippy
+          args: -D warnings
+
+      - name: Generate Schema
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: 1.74.0
+          command: schema
+          args: --locked --release --manifest-path cw-airdrop/Cargo.toml
+
+      - name: Schema Changes
+        # fails if any changes not committed
+        run: git diff --exit-code -- ./cw-airdrop/schema
