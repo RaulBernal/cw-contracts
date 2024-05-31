@@ -70,7 +70,7 @@ jobs:
           profile: minimal
           toolchain: 1.74.0
           command: fmt
-          args: --all -- --check --release --manifest-path cw-burn/Cargo.toml
+          args: --all --check --release --manifest-path cw-burn/Cargo.toml
         env:
           working-directory: ./cw-burn
 
@@ -80,7 +80,7 @@ jobs:
           profile: minimal
           toolchain: 1.74.0
           command: clippy
-          args: -- -D warnings
+          args: -D warnings
 
       - name: Generate Schema
         uses: actions-rs/toolchain@v1
