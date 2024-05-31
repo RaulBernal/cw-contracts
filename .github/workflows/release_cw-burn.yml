@@ -21,7 +21,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: run-script
-          args: optimize --manifest-path cw-burn/Cargo.toml
+          args: optimize -- --manifest-path cw-burn/Cargo.toml
         env:
           RUST_BACKTRACE: full
       - name: Get release ID
