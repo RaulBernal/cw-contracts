@@ -1,5 +1,3 @@
-.github/workflows/test_lint_cw-burn.yml
-
 on: 
   push:
     paths:
