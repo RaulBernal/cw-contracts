@@ -1,4 +1,4 @@
-# Based on https://github.com/actions-rs/example/blob/master/.github/workflows/quickstart.yml
+.github/workflows/test_lint_cw-burn.yml
 
 on: 
   push:
@@ -28,7 +28,7 @@ jobs:
       - name: Run unit tests
         uses: actions-rs/cargo@v1
         with:
-          command: unit-test
+          command: test
           args: --locked
         env:
           RUST_BACKTRACE: 1
@@ -36,8 +36,8 @@ jobs:
       - name: Compile WASM contract
         uses: actions-rs/cargo@v1
         with:
-          command: wasm
-          args: --locked
+          command: build
+          args: --target wasm32-unknown-unknown --release
         env:
           RUSTFLAGS: "-C link-arg=-s"
 
