@@ -1,5 +1,3 @@
-# Based on https://github.com/actions-rs/example/blob/master/.github/workflows/quickstart.yml
-
 on: 
   push:
     paths:
@@ -26,20 +24,26 @@ jobs:
           override: true
 
       - name: Run unit tests
-        uses: actions-rs/cargo@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          command: unit-test
-          args: --locked
+          toolchain: 1.74.0
+          targets: wasm32-unknown-unknown
+          command: test
+          args: --locked --manifest-path cw-airdrop/Cargo.toml
         env:
           RUST_BACKTRACE: 1
+          
 
       - name: Compile WASM contract
-        uses: actions-rs/cargo@v1
+        uses: dtolnay/rust-toolchain@master
         with:
-          command: wasm
-          args: --locked
+          toolchain: 1.74.0
+          targets: wasm32-unknown-unknown
+          command: build
+          args: --target wasm32-unknown-unknown --release --manifest-path cw-airdrop/Cargo.toml
         env:
           RUSTFLAGS: "-C link-arg=-s"
+          working-directory: ./cw-airdrop
 
   lints:
     name: Lints
@@ -54,28 +58,38 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: 1.74.0
+          toolchain: 1.60.0
           override: true
           components: rustfmt, clippy
+        env:
+          working-directory: ./cw-airdrop
 
       - name: Run cargo fmt
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/toolchain@v1
         with:
+          profile: minimal
+          toolchain: 1.74.0
           command: fmt
-          args: --all -- --check
+          args: --all --check --release --manifest-path cw-airdrop/Cargo.toml
+        env:
+          working-directory: ./cw-airdrop
 
       - name: Run cargo clippy
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/toolchain@v1
         with:
+          profile: minimal
+          toolchain: 1.74.0
           command: clippy
-          args: -- -D warnings
+          args: -D warnings
 
       - name: Generate Schema
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/toolchain@v1
         with:
+          profile: minimal
+          toolchain: 1.74.0
           command: schema
-          args: --locked
+          args: --locked --release --manifest-path cw-airdrop/Cargo.toml
 
       - name: Schema Changes
         # fails if any changes not committed
-        run: git diff --exit-code schema
+        run: git diff --exit-code -- ./cw-airdrop/schema
