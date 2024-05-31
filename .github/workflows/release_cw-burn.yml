@@ -13,15 +13,19 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
       - name: Install cargo-run-script
-        uses: actions-rs/cargo@v1
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: 1.74.0
+          targets: wasm32-unknown-unknown
           command: install
           args: cargo-run-script --manifest-path cw-burn/Cargo.toml
       - name: Run cargo optimize
-        uses: actions-rs/cargo@v1
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: 1.74.0
+          targets: wasm32-unknown-unknown
           command: run-script
-          args: optimize -- --manifest-path cw-burn/Cargo.toml
+          args: optimize --manifest-path cw-burn/Cargo.toml
         env:
           RUST_BACKTRACE: full
       - name: Get release ID
