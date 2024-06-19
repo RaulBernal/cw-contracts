@@ -52,10 +52,15 @@ pub mod execute {
 
     pub fn burn_now(deps: DepsMut, env: Env, info: MessageInfo, amount: u128) -> Result<Response, ContractError> {
         let owner = CONFIG.load(deps.storage)?.owner;
+
         // Check if the sender is the owner
         if info.sender != owner {
-            return Err(ContractError::Unauthorized {});
+            return Err(ContractError::Unauthorized { 
+                sender: info.sender.to_string(), 
+                owner: owner.to_string() 
+            });
         }
+        
         // Burn value
         let coin = Coin {
             amount: amount.into(),
@@ -123,4 +128,3 @@ mod tests {
         println!("{:?}", mock_env());
     }
 }
-
