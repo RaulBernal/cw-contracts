@@ -20,10 +20,14 @@ pub fn instantiate(
     deps: DepsMut,
     _env: Env,
     info: MessageInfo,
-    _msg: InstantiateMsg,
+    msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
+    let owner = match msg.owner {
+        Some(addr_string) => deps.api.addr_validate(&addr_string)?,
+        None => info.sender.clone(),
+    };    
     let config = Config {
-        owner: info.sender.clone(),
+        owner: owner.clone(),
     };
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
     CONFIG.save(deps.storage, &config)?;
@@ -31,8 +35,7 @@ pub fn instantiate(
 
     Ok(Response::new()
         .add_attribute("method", "instantiate")
-        .add_attribute("owner", info.sender)
-    )
+        .add_attribute("owner", owner.to_string()))
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -52,10 +55,15 @@ pub mod execute {
 
     pub fn burn_now(deps: DepsMut, env: Env, info: MessageInfo, amount: u128) -> Result<Response, ContractError> {
         let owner = CONFIG.load(deps.storage)?.owner;
+
         // Check if the sender is the owner
         if info.sender != owner {
-            return Err(ContractError::Unauthorized {});
+            return Err(ContractError::Unauthorized { 
+                sender: info.sender.to_string(), 
+                owner: owner.to_string() 
+            });
         }
+        
         // Burn value
         let coin = Coin {
             amount: amount.into(),
@@ -123,4 +131,3 @@ mod tests {
         println!("{:?}", mock_env());
     }
 }
-
